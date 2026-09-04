@@ -216,3 +216,31 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- Deep Learning / YOLO & Medical Tracking Specifcs ---
+*.pt
+*.onnx
+*.engine
+
+# Données lourdes et vidéos
+data/*
+!data/samples/README.md
+*.mp4
+*.avi
+*.mov
+
+# Résultats d'entraînement YOLO (Colab ou local)
+runs/
+.pt
+
+# Environnements virtuels
+.venv/
+venv/
+env/
+
+# Cache Python & IDE
+__pycache__/
+*.pyc
+.vscode/
+.idea/
+.ipynb_checkpoints/
