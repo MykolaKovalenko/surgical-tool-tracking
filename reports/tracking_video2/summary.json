@@ -1,0 +1,33 @@
+{
+  "video": "data\\test_video2.mp4",
+  "model": "models\\best.pt",
+  "tracker": "bytetrack.yaml",
+  "confidence_threshold": 0.25,
+  "imgsz": 640,
+  "device": "cpu",
+  "source_fps": 30.0,
+  "source_frames_metadata": 750,
+  "processed_frames": 750,
+  "duration_seconds": 25.0,
+  "frames_with_detections": 750,
+  "detection_coverage": 1.0,
+  "total_detections": 1218,
+  "mean_detections_per_frame": 1.624,
+  "mean_detection_confidence": 0.7139,
+  "unique_track_ids": 34,
+  "longest_track_frames": 290,
+  "tracks_seen_once": 9,
+  "reappearance_gaps": 62,
+  "largest_reappearance_gap_frames": 29,
+  "class_detection_counts": {
+    "Grasper": 1166,
+    "Hook": 50,
+    "Clipper": 2
+  },
+  "inference_fps_sampled": 4.99,
+  "inference_latency_p50_ms": 182.86,
+  "inference_latency_p95_ms": 378.18,
+  "realtime_at_source_fps": false,
+  "ground_truth_metrics": null,
+  "note": "MOTA, IDF1, and HOTA require annotated ground-truth tracks."
+}
