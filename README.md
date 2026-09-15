@@ -2,7 +2,9 @@
 
 **Real-time-ready detection and multi-object tracking of laparoscopic instruments.** This project combines a custom-trained YOLO detector with ByteTrack to answer a practical question in computer-assisted surgery: *which instruments are visible, where are they, and which detections belong to the same instrument over time?*
 
-![Annotated tracking demo](docs/assets/tracking-demo.jpg)
+![Annotated tracking demo](experiments/docs/assets/tracking-demo.jpg)
+
+![YOLO + ByteTrack demo](experiments/docs/assets/test_video2_demo.gif)
 
 This frame shows two tracked instruments with class labels, confidence scores,
 persistent IDs, and the measured display FPS. The full demo video is produced
@@ -20,9 +22,28 @@ locally because the surgical video assets are too large for the repository.
 
 The detection values are validation results from the 100-epoch v2 Colab run;
 they are not a final independent test result. The v2 result is compared with
-the 50-epoch v1 baseline in `reports/training_yolo11s_v2/summary.md`. The
+the 50-epoch v1 baseline in `experiments/reports/training_yolo11s_v2/summary.md`. The
 current local CPU benchmark is not presented as a real-time result: 10.76 FPS
 is still below the 30 FPS source rate.
+
+### Measured `test_video2` run
+
+| Metric | Value |
+|---|---:|
+| Source duration | 25.0 s |
+| Source FPS | 30.0 |
+| Processed frames | 750 |
+| Detection coverage | 99.33% |
+| Mean detections/frame | 1.5053 |
+| Mean confidence | 0.6975 |
+| Unique track IDs | 37 |
+| Longest track | 293 frames |
+| Inference FPS, CPU | 10.18 |
+| Latency p50 / p95 | 94.33 / 110.32 ms |
+
+This is a runtime and behavior report, not tracking accuracy. `test_video2` has
+no official tracking labels, so precision, recall, MOTA, IDF1, and HOTA are not
+reported for it. The full report is saved under `outputs/test_video2_report/`.
 
 ## Why this project matters
 
@@ -38,7 +59,16 @@ The main demonstration should be a 15-30 second video showing:
 4. the measured processing FPS and source FPS;
 5. one failure case, kept visible and explained.
 
-Keep one annotated video or GIF in the repository, preferably under `docs/assets/`, and link to the full-resolution MP4 when it is too large for GitHub. A short demo with a visible limitation is more credible than a long video with only successful frames.
+Keep one short annotated video or GIF under `experiments/docs/assets/`. A 10-second
+GIF preview is already generated from `test_video2`:
+
+```markdown
+![YOLO + ByteTrack demo](experiments/docs/assets/test_video2_demo.gif)
+```
+
+The full local result is `outputs/test_video2_tracked.mp4`. Publish it only if the
+source video is legally redistributable; otherwise publish the GIF only when its
+use is permitted, or link to the original source instead.
 
 ## What this demonstrates
 
@@ -51,13 +81,12 @@ Keep one annotated video or GIF in the repository, preferably under `docs/assets
 ## Project structure
 
 ```text
-main.py                 # inference and optional live preview
-src/tracker.py          # YOLO + ByteTrack video pipeline
-src/evaluate_tracking.py # latency, throughput and tracking diagnostics
-src/cut_video.py        # reproducible frame-accurate clip creation
-models/best.pt          # local weights, intentionally ignored by Git
-data/samples/           # local source videos, intentionally ignored by Git
-reports/                # compact experiment summaries
+main.py                # only runtime entry point
+src/tracker.py         # YOLO + ByteTrack implementation
+models/best.pt         # local model weights
+data/                  # local input videos and samples
+outputs/               # current generated result only
+experiments/           # optional preparation, evaluation, and training tools
 ```
 
 ## Installation
@@ -82,6 +111,46 @@ link for the weights and a short legally redistributable demo clip or GIF.
 The current local model is YOLO11s v2 trained on Cholec80. Its validation and
 comparison summary is recorded in `reports/training_yolo11s_v2/summary.md`.
 
+## Prepared local video data
+
+The extracted image sequences are also assembled locally as plain 10 FPS videos
+for repeatable experiments. No tracking or model output is embedded in these files:
+
+```text
+data/
+  video41/
+    video41_10fps.mp4
+    video41_tracking_gt.csv
+  video42/
+    video42_10fps.mp4
+    video42_tracking_gt.csv
+  video43/
+    video43_10fps.mp4
+    video43_tracking_gt.csv
+  video44/
+    video44_10fps.mp4
+    video44_tracking_gt.csv
+  video45/
+    video45_10fps.mp4
+    video45_tracking_gt.csv
+```
+
+The CSV files contain the project-specific reference boxes and reconstructed
+track IDs for the corresponding frame sequence. They are targets for evaluation,
+not official tracking ground truth. Use a prepared video as input to the model,
+then export predictions to a separate output folder:
+
+```powershell
+python main.py `
+  --model models/best.pt `
+  --source data/video41/video41_10fps.mp4 `
+  --output outputs/video41_tracked.mp4 `
+  --device cpu
+```
+
+For cutting experiments, keep the original frame sequence or cut the prepared
+10 FPS MP4 consistently. The CSV frame names refer to the original PNG names.
+
 ## Run inference
 
 ```powershell
@@ -98,10 +167,33 @@ Add `--display` for an OpenCV preview. `--device 0` selects the first CUDA
 GPU; omit it to let Ultralytics choose. Lowering `--imgsz` can increase
 throughput, but every speed/accuracy trade-off must be benchmarked.
 
-## Measure the system
+## Optional experiments
+
+The simple public workflow is only video -> YOLO -> ByteTrack. Tools beyond that
+path are kept in `experiments/tools/` so they do not obscure the main project.
+Use them only when preparing a benchmark or training dataset.
+
+```text
+experiments/tools/cut_video.py
+experiments/tools/evaluate_tracking.py
+experiments/tools/evaluate_tracking_reference.py
+experiments/tools/prepare_yolo_dataset.py
+experiments/tools/reconstruct_tracking_gt.py
+experiments/configs/
+experiments/docs/
+experiments/reports/
+experiments/notebooks/
+experiments/archives/
+```
+
+The reference CSVs are project-specific targets reconstructed from frame
+annotations, not official tracking ground truth. Keep the source frame order when
+cutting clips; the current CSVs use the original PNG frame names.
+
+## Optional runtime measurement
 
 ```powershell
-python src/evaluate_tracking.py `
+python experiments/tools/evaluate_tracking.py `
   --model models/best.pt `
   --source data/test_video2.mp4 `
   --report-dir reports/tracking_video2 `
@@ -120,16 +212,15 @@ system is real-time. A credible real-time claim must state hardware, input
 resolution, model version, batch size, and whether capture, inference,
 annotation, and display are included.
 
-## Metrics to present
+## Presentation guidance
 
 For detection, report mAP@50, mAP@50:95, precision, recall, and per-class
 results on a held-out test split. The existing archive values are not enough
 without the dataset split and evaluation protocol.
 
-For tracking, annotate a short representative sequence with ground-truth
-boxes and identities, then report HOTA, IDF1, MOTA, ID switches, and track
-fragmentation. Detection coverage, confidence, longest track, and ID gaps are
-useful diagnostics, but they are not tracking accuracy.
+Use a real, legally distributable video for the main qualitative demo. Without
+official temporal identity labels, do not present reconstructed tracking metrics
+as clinical or official tracking accuracy.
 
 For deployment, report mean/p50/p95 latency, end-to-end FPS, source FPS,
 hardware, resolution, and memory. The target is usually at least 25 FPS for a
