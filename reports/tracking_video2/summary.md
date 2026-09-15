@@ -37,5 +37,6 @@
 
 MOTA, IDF1, and HOTA are not computed because this video has no ground-truth
 trajectories. The values above measure system behavior, not tracking accuracy.
-See `frame_metrics.csv` for frame-level details.
-See `track_metrics.csv` for one row per observed track ID.
+Frame-level and per-track CSV files can be regenerated locally with the
+evaluation command in `docs/REPRODUCING_RESULTS.md`; they are intentionally not
+tracked in the public repository.

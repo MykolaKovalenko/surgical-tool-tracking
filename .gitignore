@@ -223,11 +223,14 @@ __marimo__/
 *.engine
 outputs/
 yolo11_cholec80_v1_results.zip
+yolov11_training_results.zip
 
 # Rapports générés : conserver seulement les résumés lisibles
 reports/*
 !reports/training_yolo11s_v1/
 !reports/training_yolo11s_v1/summary.md
+!reports/training_yolo11s_v2/
+!reports/training_yolo11s_v2/summary.md
 !reports/tracking_video2/
 !reports/tracking_video2/summary.md
 

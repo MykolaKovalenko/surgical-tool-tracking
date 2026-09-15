@@ -5,23 +5,24 @@
 ![Annotated tracking demo](docs/assets/tracking-demo.jpg)
 
 This frame shows two tracked instruments with class labels, confidence scores,
-persistent IDs, and the measured display FPS. The full demo video is generated
+persistent IDs, and the measured display FPS. The full demo video is produced
 locally because the surgical video assets are too large for the repository.
 
 ## Results at a glance
 
 | Area | Current result | Protocol |
 |---|---:|---|
-| Detection | `mAP50: 0.9257` | Colab validation split |
-| Detection | `mAP50-95: 0.5517` | Colab validation split |
-| Detection | `P: 0.9092`, `R: 0.8844` | Colab validation split |
+| Detection | `mAP50: 0.9298` | v2 Colab validation split |
+| Detection | `mAP50-95: 0.5501` | v2 Colab validation split |
+| Detection | `P: 0.9371`, `R: 0.8912` | v2 Colab validation split |
 | Tracking | Not yet measured with ground truth | Annotated sequence required |
-| Runtime | `4.99 FPS`, `182.86/378.18 ms p50/p95` | Local CPU, 640 px |
+| Runtime | `10.76 FPS`, `90.98/96.36 ms p50/p95` | Local CPU, 640 px |
 
-The detection values are validation results from the 50-epoch Colab run; they
-are not a final independent test result. The best mAP50-95 was reached at
-epoch 49. The current local CPU benchmark is kept in the generated report and
-is not presented as a real-time result.
+The detection values are validation results from the 100-epoch v2 Colab run;
+they are not a final independent test result. The v2 result is compared with
+the 50-epoch v1 baseline in `reports/training_yolo11s_v2/summary.md`. The
+current local CPU benchmark is not presented as a real-time result: 10.76 FPS
+is still below the 30 FPS source rate.
 
 ## Why this project matters
 
@@ -52,11 +53,11 @@ Keep one annotated video or GIF in the repository, preferably under `docs/assets
 ```text
 main.py                 # inference and optional live preview
 src/tracker.py          # YOLO + ByteTrack video pipeline
-src/evaluate_tracking.py# latency, throughput and tracking diagnostics
+src/evaluate_tracking.py # latency, throughput and tracking diagnostics
 src/cut_video.py        # reproducible frame-accurate clip creation
 models/best.pt          # local weights, intentionally ignored by Git
 data/samples/           # local source videos, intentionally ignored by Git
-reports/                # generated reports, useful locally but not source code
+reports/                # compact experiment summaries
 ```
 
 ## Installation
@@ -78,8 +79,8 @@ the exported `best.pt` at `models/best.pt` and a local clip at
 `data/test_video.mp4`. For a public repository, provide a documented release
 link for the weights and a short legally redistributable demo clip or GIF.
 
-The current local model is YOLO11s trained on Cholec80. Its validation summary
-is recorded in `reports/training_yolo11s_v1/summary.md`.
+The current local model is YOLO11s v2 trained on Cholec80. Its validation and
+comparison summary is recorded in `reports/training_yolo11s_v2/summary.md`.
 
 ## Run inference
 

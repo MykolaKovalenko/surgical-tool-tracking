@@ -19,6 +19,32 @@ The current baseline was trained in Google Colab with:
 The exported `best.pt` belongs in `models/best.pt`. Do not compare a new model
 using a different split or image size without recording that change.
 
+## Updating the model safely
+
+Keep the current weights before installing a new version:
+
+```powershell
+Copy-Item models\best.pt models\best_v1.pt
+```
+
+Copy the new Colab export to a temporary name first, for example
+`models\best_v2.pt`. Then verify its classes and file hash:
+
+```powershell
+venv\Scripts\python.exe -c "from ultralytics import YOLO; m=YOLO('models/best_v2.pt'); print(m.names)"
+Get-FileHash models\best_v2.pt -Algorithm SHA256
+```
+
+Only after this check should the new model become the default:
+
+```powershell
+Copy-Item models\best_v2.pt models\best.pt -Force
+```
+
+The old and new models must be evaluated on the same video, with the same
+confidence threshold, image size, device, and tracker configuration. This
+keeps the comparison meaningful.
+
 ## 2. Offline video inference
 
 ```powershell
@@ -46,6 +72,33 @@ venv\Scripts\python.exe src\evaluate_tracking.py `
   --imgsz 640 `
   --device cpu
 ```
+
+For a new model, use a separate report directory and output video rather than
+overwriting the baseline:
+
+```powershell
+venv\Scripts\python.exe main.py `
+  --model models\best_v2.pt `
+  --source data\test_video2.mp4 `
+  --output outputs\tracking-demo-v2.mp4 `
+  --confidence 0.25 `
+  --imgsz 640 `
+  --device cpu
+
+venv\Scripts\python.exe src\evaluate_tracking.py `
+  --model models\best_v2.pt `
+  --source data\test_video2.mp4 `
+  --report-dir reports\tracking_video2_v2 `
+  --confidence 0.25 `
+  --imgsz 640 `
+  --device cpu
+```
+
+Compare detection metrics from the Colab validation run, then compare the
+video diagnostics: inference FPS, p50/p95 latency, detection coverage, number
+of observed IDs, tracks seen once, and reappearance gaps. A model is better
+only when the metric improvement matches the intended use case; higher mAP
+does not automatically mean more stable tracking.
 
 Use `summary.md` for a compact report and `summary.json` or the CSV files for
 further analysis. The official runtime result must include hardware, input
