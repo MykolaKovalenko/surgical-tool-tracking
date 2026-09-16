@@ -15,7 +15,7 @@
 *The frame above shows tracked surgical instruments with class labels, confidence scores, persistent IDs, and real-time display FPS.*
 
 ## Model Architecture
-I selected **YOLOv11s**[2] (9.4M parameters). This model architecture was chosen for its strong balance between detection accuracy and lightweight computational footprint, making it suitable for real-time tracking integration using **ByteTrack**[3] (Object Tracking by Associating Every Detection Box).
+I selected **YOLOv11s**[3] (9.4M parameters). This model architecture was chosen for its strong balance between detection accuracy and lightweight computational footprint, making it suitable for real-time tracking integration using **ByteTrack**[4] (Object Tracking by Associating Every Detection Box).
 
 ## Dataset and training
 The model was trained using the [Cholec80 Computer Vision Dataset](https://universe.roboflow.com/daad-mobility/cholec80/dataset/3#) (Roboflow version 3), consisting of 8,263 annotated frames with $224 \times 224$ resolution (resized to $640 \times 640$ resolution for training) across 7 surgical tool categories.
@@ -71,11 +71,11 @@ To extend frame-by-frame detection into temporal video tracking, **ByteTrack** w
 
 While single-frame evaluation yields strong metrics on static test sets, real-time video tracking presents domain-specific challenges due to tool appearance variations, rapid movements, and visual interference:
 
-* **High-Visibility Baseline**: Clear video feeds with high contrast yield smooth, continuous tracking trajectories and persistent IDs.
+* **High-Visibility Baseline [1]**: Clear video feeds with high contrast yield smooth, continuous tracking trajectories and persistent IDs.
   
   ![Nominal Case](presentation/v3_test2_11s_14s.gif)
 
-* **Complex Medical Environments**: Visual obstacles such as surgical smoke, blood spray, and partial tissue occlusions significantly degrade bounding box detection, causing transient track loss or ID swaps.
+* **Complex Medical Environments [2]**: Visual obstacles such as surgical smoke, blood spray, and partial tissue occlusions significantly degrade bounding box detection, causing transient track loss or ID swaps.
 
   ![Hard Case](presentation/v3_test1_18s_21s.gif)
 
@@ -87,3 +87,9 @@ While single-frame evaluation yields strong metrics on static test sets, real-ti
 * **Detection vs. Tracking Gap**: While single-frame detection succeeded, applying ByteTrack to real surgical videos revealed major stability limits. Visual interferences (surgical smoke, blood, tissue coverage) frequently disrupt bounding boxes, showing that strong detection metrics on static frames do not guarantee reliable temporal tracking.
 * **The Video Data Bottleneck**: Reliable tracking cannot be achieved or evaluated using frame-by-frame datasets alone. Dedicated, densely annotated video datasets are strictly required to properly train temporal association models and compute quantitative tracking metrics (MOTA, IDF1, HOTA).
 * **Exploratory Proof of Concept**: This project demonstrates the potential of lightweight YOLO models in laparoscopic computer vision, while highlighting why zero-shot video tracking remains experimental and unreliable without video-native ground truth.
+
+## References
+* [1] [V361 Laparoscopic Completion Cholecystectomy](https://www.youtube.com/watch?v=tZ7RciyNkn0&t=21s)
+* [2] [Laparoscopic Sleeve Gastrectomy: Surgical Technique](https://www.youtube.com/watch?v=fecXdNs6rp0&t=215s)
+* [3] [Ultralytics YOLO11 Documentation](https://docs.ultralytics.com/models/yolo11)
+* [4] [ByteTrack: Multi-Object Tracking by Associating Every Detection Box](https://arxiv.org/abs/2110.06864)
