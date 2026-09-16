@@ -1,6 +1,10 @@
 # Surgical Tool Tracking
 
-**Real-time-ready detection and multi-object tracking of laparoscopic instruments.** This project combines a custom-trained YOLO detector with ByteTrack to answer a practical question in computer-assisted surgery: *which instruments are visible, where are they, and which detections belong to the same instrument over time?*
+**Laparoscopic Surgical Instrument Detection via YOLOv11 (with ByteTrack Integration Experiments).** This project combines a custom-trained YOLO detector with Bytetrack implimentation.
+
+![Image 1](data/presentation/Bipolar/Bipolar_sample_3.jpg) ![Image 2](data/presentation/Clipper/Clipper_sample_1.jpg) ![Image 3](data/presentation/Grasper/Grasper_sample_2.jpg)
+
+![Image 4](data/presentation/Hook/Hook_sample_1.jpg) ![Image 5](data/presentation/Irrigator/Irrigator_sample_3.jpg) ![Image 6](data/presentation/Scissors/Scissors_sample_3.jpg)
 
 ![Annotated tracking demo](experiments/docs/assets/tracking-demo.jpg)
 
@@ -9,6 +13,27 @@
 This frame shows two tracked instruments with class labels, confidence scores,
 persistent IDs, and the measured display FPS. The full demo video is produced
 locally because the surgical video assets are too large for the repository.
+
+## Model
+I selected **YOLOv11s** [1] (9.4M parameters). This model architecture was chosen for its strong balance between detection accuracy and lightweight computational footprint, making it suitable for real-time tracking integration using **ByteTrack** [2] (Object Tracking by Associating Every Detection Box)
+
+## Dataset and training
+The model was trained using the [Cholec80 Computer Vision Dataset](https://universe.roboflow.com/daad-mobility/cholec80/dataset/3#) (Roboflow version 3), consisting of 8,263 annotated frames with $224 \times 224$ resolution (resized to $640 \times 640$ resolution for training) across 7 surgical tool categories.
+
+Due to severe class imbalance (e.g., *Scissors* being significantly under-represented compared to *Grasper* or *Hook*), an iterative training and data augmentation strategy was applied:
+
+1. **Initial Baseline (30 Epochs)**:
+   - **mAP50**: 93.53% | **mAP50-95**: 54.91%
+   - **Precision**: 94.97% | **Recall**: 88.54%
+   - *Observation*: High accuracy across most tools, but lower performance on rare classes (*Scissors* mAP50 was capped at ~82.5%).
+
+2. **Targeted Data Augmentation (20 Epochs Fine-Tuning)**:
+   - Applied class-focused spatial augmentations (including Copy-Paste and scale adjustments) to generate synthetic variations of rare tool instances, improving feature extraction for *Scissors*.
+
+3. **Domain Robustness & Blur Augmentations**:
+   - Added motion blur and Gaussian noise augmentations to simulate real-world laparoscopic environments (surgical smoke, camera lens smudges, and rapid tool movement), enhancing model generalization on low-visibility video sequences.
+
+
 
 ## Results at a glance
 
@@ -90,6 +115,9 @@ experiments/           # optional preparation, evaluation, and training tools
 ```
 
 ## Installation
+
+Toutes les commandes utiles, de la decoupe jusqu'a la creation du GIF GitHub,
+sont rassemblees dans [COMMANDS.md](COMMANDS.md).
 
 ```powershell
 python -m venv venv
@@ -239,3 +267,58 @@ case; offline analysis has no 25 FPS requirement.
 
 This is a research/engineering portfolio project, not a clinical device. No
 clinical performance or safety claim should be inferred from these videos.
+
+v1:
+                  Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 64/64 3.8it/s 16.7s0.2s
+                   all       1015       1782       0.95      0.885      0.935      0.549
+               Bipolar         96         96      0.972      0.948      0.974      0.526
+               Clipper         80         80        0.9        0.9      0.948      0.532
+               Grasper        649        818      0.931      0.845      0.911      0.543
+                  Hook        459        460      0.971      0.974      0.973      0.595
+             Irrigator        123        123      0.978      0.878      0.948      0.543
+              Scissors         40         40      0.934      0.725      0.834      0.487
+          Specimen Bag        165        165      0.962      0.927      0.959      0.618
+Speed: 1.2ms preprocess, 9.7ms inference, 0.0ms loss, 1.1ms postprocess per image
+Saving /kaggle/working/results/test_cholec80_metrics/predictions.json...
+
+--- Résultats sur le jeu de TEST ---
+mAP50-95 : 0.5491
+mAP50    : 0.9353
+Précision: 0.9497
+Rappel   : 0.8854
+
+v2 :
+                Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 64/64 3.8it/s 17.0s0.3s
+                   all       1015       1782      0.947      0.879      0.929      0.554
+               Bipolar         96         96      0.967      0.958      0.953      0.539
+               Clipper         80         80      0.948      0.917      0.953      0.528
+               Grasper        649        818      0.918      0.839      0.903      0.537
+                  Hook        459        460      0.969       0.95      0.972      0.603
+             Irrigator        123        123      0.982      0.868      0.947      0.568
+              Scissors         40         40       0.88        0.7      0.825      0.481
+          Specimen Bag        165        165      0.962      0.919      0.951      0.618
+
+--- Résultats sur le jeu de TEST ---
+mAP50-95 : 0.5535
+mAP50    : 0.9290
+Précision: 0.9465
+Rappel   : 0.8788
+
+
+v3 :
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 64/64 3.8it/s 16.9s0.3s
+                   all       1015       1782      0.903      0.897       0.93      0.552
+               Bipolar         96         96      0.883      0.958      0.949      0.537
+               Clipper         80         80      0.847      0.901      0.948       0.54
+               Grasper        649        818      0.885      0.875      0.904      0.533
+                  Hook        459        460       0.97      0.978      0.983      0.605
+             Irrigator        123        123      0.974      0.919      0.955      0.569
+              Scissors         40         40      0.824      0.704      0.801      0.463
+          Specimen Bag        165        165      0.936      0.945      0.968      0.617
+Speed: 1.2ms preprocess, 9.9ms inference, 0.0ms loss, 0.8ms postprocess per image
+
+--- Résultats sur le jeu de TEST ---
+mAP50-95 : 0.5518
+mAP50    : 0.9296
+Précision: 0.9028
+Rappel   : 0.8973
