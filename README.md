@@ -52,7 +52,7 @@ Due to severe class imbalance (e.g., *Scissors* being significantly under-repres
 
 * **Inference Speed**: 1.2ms preprocess, 9.9ms inference, 0.8ms postprocess per image.
 
-<img src="[img](presentation/BoxPR_curve.png)" width="49%"> <img src="![img](presentation/confusion_matrix.png)" width="49%">
+<img src="presentation/BoxPR_curve.png" width="49%"> <img src="presentation/confusion_matrix.png" width="49%">
 
 * **Precision-Recall Curve (Left)**: Demonstrates high overall mAP@0.5 (0.928) across most instrument classes, with expected performance drop on under-represented tools (*Scissors* mAP50 @ 0.881).
 * **Confusion Matrix (Right)**: Shows low cross-class confusion between surgical tools. Main misclassifications stem from background false negatives (e.g., 67 missed *Grasper* instances) due to tissue occlusions.
