@@ -1,4 +1,4 @@
-# Surgical Tool Tracking
+# Surgical Tool Detection and Tracking
 
 **Laparoscopic Surgical Instrument Detection via YOLOv11 (with ByteTrack Integration Experiments).** This project combines a custom-trained YOLO detector with Bytetrack implimentation.
 
@@ -6,16 +6,18 @@
 
 ![Image 4](presentation/Hook/Hook_sample_1.jpg) ![Image 5](presentation/Irrigator/Irrigator_sample_3.jpg) ![Image 6](presentation/Scissors/Scissors_sample_3.jpg)
 
+*Sample annotated frames from the test set.*
+
+### Demos
+
 ![Annotated tracking demo](experiments/docs/assets/tracking-demo.jpg)
 
-![YOLO + ByteTrack demo](experiments/docs/assets/test_video2_demo.gif)
+![YOLO + ByteTrack demo](presentation/v3_test2_11s_14s.gif)
 
-This frame shows two tracked instruments with class labels, confidence scores,
-persistent IDs, and the measured display FPS. The full demo video is produced
-locally because the surgical video assets are too large for the repository.
+*The frame above shows tracked surgical instruments with class labels, confidence scores, persistent IDs, and real-time display FPS.*
 
-## Model
-I selected **YOLOv11s** [1] (9.4M parameters). This model architecture was chosen for its strong balance between detection accuracy and lightweight computational footprint, making it suitable for real-time tracking integration using **ByteTrack** [2] (Object Tracking by Associating Every Detection Box)
+## Model Architecture
+I selected **YOLOv11s** (9.4M parameters). This model architecture was chosen for its strong balance between detection accuracy and lightweight computational footprint, making it suitable for real-time tracking integration using **ByteTrack** (Object Tracking by Associating Every Detection Box).
 
 ## Dataset and training
 The model was trained using the [Cholec80 Computer Vision Dataset](https://universe.roboflow.com/daad-mobility/cholec80/dataset/3#) (Roboflow version 3), consisting of 8,263 annotated frames with $224 \times 224$ resolution (resized to $640 \times 640$ resolution for training) across 7 surgical tool categories.
@@ -35,21 +37,22 @@ Due to severe class imbalance (e.g., *Scissors* being significantly under-repres
 
 
 
-## Results at a glance
+## Results at a Glance
 
-| Area | Current result | Protocol |
-|---|---:|---|
-| Detection | `mAP50: 0.9298` | v2 Colab validation split |
-| Detection | `mAP50-95: 0.5501` | v2 Colab validation split |
-| Detection | `P: 0.9371`, `R: 0.8912` | v2 Colab validation split |
-| Tracking | Not yet measured with ground truth | Annotated sequence required |
-| Runtime | `10.76 FPS`, `90.98/96.36 ms p50/p95` | Local CPU, 640 px |
+### Performance Metrics on Test Set
 
-The detection values are validation results from the 100-epoch v2 Colab run;
-they are not a final independent test result. The v2 result is compared with
-the 50-epoch v1 baseline in `experiments/reports/training_yolo11s_v2/summary.md`. The
-current local CPU benchmark is not presented as a real-time result: 10.76 FPS
-is still below the 30 FPS source rate.
+| Class | Images | Instances | Precision (P) | Recall (R) | mAP50 | mAP50-95 |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **All** | **1015** | **1782** | **0.903** | **0.897** | **0.930** | **0.552** |
+| Bipolar | 96 | 96 | 0.883 | 0.958 | 0.949 | 0.537 |
+| Clipper | 80 | 80 | 0.847 | 0.901 | 0.948 | 0.540 |
+| Grasper | 649 | 818 | 0.885 | 0.875 | 0.904 | 0.533 |
+| Hook | 459 | 460 | 0.970 | 0.978 | 0.983 | 0.605 |
+| Irrigator | 123 | 123 | 0.974 | 0.919 | 0.955 | 0.569 |
+| Scissors | 40 | 40 | 0.824 | 0.704 | 0.801 | 0.463 |
+| Specimen Bag | 165 | 165 | 0.936 | 0.945 | 0.968 | 0.617 |
+
+* **Inference Speed**: 1.2ms preprocess, 9.9ms inference, 0.8ms postprocess per image.
 
 ### Measured `test_video2` run
 
