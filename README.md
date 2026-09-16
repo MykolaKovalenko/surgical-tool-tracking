@@ -71,7 +71,7 @@ To extend frame-by-frame detection into temporal video tracking, **ByteTrack** w
 
 While single-frame evaluation yields strong metrics on static test sets, real-time video tracking presents domain-specific challenges due to tool appearance variations, rapid movements, and visual interference:
 
-* **High-Visibility Baseline [1]**: Clear video feeds with high contrast yield smooth, continuous tracking trajectories and persistent IDs.
+* **High-Visibility Baseline [1]**: Clear video feeds with high contrast yield smooth, still we remark Id switches.
   
   ![Nominal Case](presentation/v3_test2_11s_14s.gif)
 
