@@ -117,14 +117,13 @@ def track_video(
 				device=device,
 				verbose=False,
 			)
-			annotated = _annotate_frame(results[0], previous_time, frame_count)
+			annotated = _annotate_frame(results[0], previous_time, frame_count + 1)
 			previous_time = time.perf_counter()
 			writer.write(annotated)
 			if prediction_path is not None:
 				prediction_rows.extend(
 					_prediction_rows(
 						results[0], f"frame_{frame_count + 1:06d}.png", frame_count + 1,
-						surgery_num=0,
 					)
 				)
 			frame_count += 1
