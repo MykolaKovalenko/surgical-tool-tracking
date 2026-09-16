@@ -50,7 +50,6 @@ Due to severe class imbalance (e.g., *Scissors* being significantly under-repres
 | Scissors | 40 | 40 | 0.824 | 0.704 | 0.801 | 0.463 |
 | Specimen Bag | 165 | 165 | 0.936 | 0.945 | 0.968 | 0.617 |
 
-* **Inference Speed**: 1.2ms preprocess, 9.9ms inference, 0.8ms postprocess per image.
 
 <img src="presentation/BoxPR_curve.png" width="49%"> <img src="presentation/confusion_matrix.png" width="49%">
 
