@@ -1,6 +1,6 @@
 # Surgical Tool Detection and Tracking
 
-**Laparoscopic Surgical Instrument Detection via YOLOv11 (with ByteTrack Integration Experiments).** This project combines a custom-trained YOLO detector with Bytetrack implimentation.
+**Laparoscopic Surgical Instrument Detection via YOLOv11 (with ByteTrack Integration).** This project combines a custom-trained YOLO detector with Bytetrack implimentation.
 
 ![Image 1](presentation/Bipolar/Bipolar_sample_3.jpg) ![Image 2](presentation/Clipper/Clipper_sample_1.jpg) ![Image 3](presentation/Grasper/Grasper_sample_2.jpg)
 
