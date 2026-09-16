@@ -2,9 +2,9 @@
 
 **Laparoscopic Surgical Instrument Detection via YOLOv11 (with ByteTrack Integration Experiments).** This project combines a custom-trained YOLO detector with Bytetrack implimentation.
 
-![Image 1](data\presentation\Bipolar\Bipolar_sample_3.jpg) ![Image 2](data/presentation/Clipper/Clipper_sample_1.jpg) ![Image 3](data/presentation/Grasper/Grasper_sample_2.jpg)
+![Image 1](presentation/Bipolar/Bipolar_sample_3.jpg) ![Image 2](presentation/Clipper/Clipper_sample_1.jpg) ![Image 3](presentation/Grasper/Grasper_sample_2.jpg)
 
-![Image 4](data/presentation/Hook/Hook_sample_1.jpg) ![Image 5](data/presentation/Irrigator/Irrigator_sample_3.jpg) ![Image 6](data/presentation/Scissors/Scissors_sample_3.jpg)
+![Image 4](presentation/Hook/Hook_sample_1.jpg) ![Image 5](presentation/Irrigator/Irrigator_sample_3.jpg) ![Image 6](presentation/Scissors/Scissors_sample_3.jpg)
 
 ![Annotated tracking demo](experiments/docs/assets/tracking-demo.jpg)
 
